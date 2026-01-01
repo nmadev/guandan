@@ -1,6 +1,7 @@
-from enum import Enum
 from dataclasses import dataclass
-from functools import total_ordering
+from enum import Enum
+import functools
+from game.utils import enum_ordering
 
 
 class Suit(str, Enum):
@@ -8,16 +9,6 @@ class Suit(str, Enum):
     Hearts = "Hearts"
     Clubs = "Clubs"
     Diamonds = "Diamonds"
-
-
-def enum_ordering(cls):
-    def __lt__(self, other):
-        if isinstance(other, type(self)):
-            return self.value < other.value
-        raise ValueError("Cannot compare different types")
-
-    setattr(cls, "__lt__", __lt__)
-    return total_ordering(cls)
 
 
 @enum_ordering
@@ -36,8 +27,14 @@ class Rank(Enum):
     King = 13
     Ace = 14
 
-
+@functools.total_ordering
 @dataclass
 class Card:
     rank: Rank
     suit: Suit
+
+    def __eq__(self, other: Card):
+        return self.rank == other.rank
+
+    def __lt__(self, other: Card):
+        return self.rank < other.rank
